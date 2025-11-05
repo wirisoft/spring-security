@@ -57,7 +57,7 @@ databases:
   - name: delivery-trujillo-db
     plan: free
     region: oregon
-    databaseName: deliveryTrujillo
+    databaseName: deliverytrujillo
     user: postgres
     postgresMajorVersion: 14
 

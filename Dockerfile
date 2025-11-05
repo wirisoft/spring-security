@@ -73,4 +73,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Comando para ejecutar la aplicación
 # Primero crea las claves JWT desde variables de entorno si existen (Render)
 # Luego ejecuta la aplicación con las rutas de las claves JWT
-ENTRYPOINT ["/bin/sh", "-c", "/app/create-jwt-keys.sh && java -DjwtKeys.privateKeyPath=/app/jwtKeys/private_key.pem -DjwtKeys.publicKeyPath=/app/jwtKeys/public_key.pem -jar app.jar"]
+# Optimizaciones para plan gratuito: memoria limitada (512MB)
+ENTRYPOINT ["/bin/sh", "-c", "/app/create-jwt-keys.sh && java -Xmx384m -Xms128m -DjwtKeys.privateKeyPath=/app/jwtKeys/private_key.pem -DjwtKeys.publicKeyPath=/app/jwtKeys/public_key.pem -jar app.jar"]

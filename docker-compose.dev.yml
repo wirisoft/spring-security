@@ -10,7 +10,7 @@ services:
     container_name: postgres_delivery_db_dev
     restart: always
     environment:
-      POSTGRES_DB: deliveryTrujillo
+      POSTGRES_DB: deliverytrujillo
       POSTGRES_PASSWORD: qwerty
       POSTGRES_USER: postgres
     ports:
