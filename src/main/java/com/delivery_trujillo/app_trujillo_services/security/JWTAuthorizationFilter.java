@@ -15,7 +15,8 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
@@ -40,8 +41,23 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         try {
             JWTClaimsSet claims = jwtUtilityService.parseJWT(token);
+            
+            // Extraer roles del JWT
+            List<String> roles = new ArrayList<>();
+            Object rolesClaim = claims.getClaim("roles");
+            if (rolesClaim instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<String> rolesList = (List<String>) rolesClaim;
+                roles = rolesList;
+            }
+            
+            // Convertir roles a authorities de Spring Security
+            List<org.springframework.security.core.GrantedAuthority> authorities = roles.stream()
+                    .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(java.util.stream.Collectors.toList());
+            
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(claims.getSubject(), null, Collections.emptyList());
+                    new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         } catch (JOSEException | ParseException | NoSuchAlgorithmException | InvalidKeySpecException e) {

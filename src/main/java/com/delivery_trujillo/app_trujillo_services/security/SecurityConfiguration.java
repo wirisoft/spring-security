@@ -32,7 +32,11 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authRequest ->
                         authRequest
+                                // Endpoints públicos de autenticación
                                 .requestMatchers("/v1/auth/**").permitAll()
+                                // Endpoints de dueño requieren rol OWNER (se usa @PreAuthorize en el controlador)
+                                .requestMatchers("/v1/owner/**").authenticated()
+                                // Todos los demás endpoints requieren autenticación
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->

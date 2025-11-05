@@ -1,0 +1,1425 @@
+{
+  "info": {
+    "name": "Delivery Trujillo API - Secuencia Lógica",
+    "description": "Colección de endpoints organizados de forma lógica y secuencial para usar la aplicación correctamente. El administrador (OWNER) debe configurar todo primero.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token_owner",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token_restaurant",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token_delivery",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token_support",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token_customer",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "restaurant_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "address_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "payment_method_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 FASE 1: Autenticación (Pública)",
+      "item": [
+        {
+          "name": "1.1. Registro de Administrador (OWNER) - PRIMERO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "const response = pm.response.json();",
+                  "if (response.numOfErrors === 0) {",
+                  "    console.log(\"✅ Administrador registrado exitosamente\");",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@deliverytrujillo.com\",\n  \"password\": \"Admin@123\",\n  \"firstName\": \"Administrador\",\n  \"lastName\": \"Sistema\",\n  \"phoneNumber\": \"987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/register/owner",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "register", "owner"]
+            },
+            "description": "⚠️ IMPORTANTE: Este debe ser el primer usuario registrado para configurar el sistema."
+          }
+        },
+        {
+          "name": "1.2. Login del Administrador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const response = pm.response.json();",
+                  "if (response.jwt) {",
+                  "    pm.environment.set(\"jwt_token_owner\", response.jwt);",
+                  "    console.log(\"✅ JWT del administrador guardado\");",
+                  "    console.log(\"Token:\", response.jwt);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@deliverytrujillo.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.3. Registro de Restaurante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pizzahouse@restaurant.com\",\n  \"password\": \"Restaurant@123\",\n  \"firstName\": \"Pizza\",\n  \"lastName\": \"House\",\n  \"phoneNumber\": \"987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/register/restaurant",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "register", "restaurant"]
+            }
+          }
+        },
+        {
+          "name": "1.4. Registro de Repartidor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"repartidor1@delivery.com\",\n  \"password\": \"Delivery@123\",\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Repartidor\",\n  \"phoneNumber\": \"987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/register/delivery",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "register", "delivery"]
+            }
+          }
+        },
+        {
+          "name": "1.5. Registro de Personal de Soporte",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"soporte@delivery.com\",\n  \"password\": \"Support@123\",\n  \"firstName\": \"Ana\",\n  \"lastName\": \"Soporte\",\n  \"phoneNumber\": \"987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/register/support",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "register", "support"]
+            }
+          }
+        },
+        {
+          "name": "1.6. Registro de Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cliente@example.com\",\n  \"password\": \"Cliente@123\",\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Pérez\",\n  \"phoneNumber\": \"987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/register/customer",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "register", "customer"]
+            }
+          }
+        },
+        {
+          "name": "1.7. Login del Cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.jwt) {",
+                  "    pm.environment.set(\"jwt_token_customer\", response.jwt);",
+                  "    console.log(\"✅ JWT del cliente guardado\");",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cliente@example.com\",\n  \"password\": \"Cliente@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.8. Login del Restaurante",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.jwt) {",
+                  "    pm.environment.set(\"jwt_token_restaurant\", response.jwt);",
+                  "    console.log(\"✅ JWT del restaurante guardado\");",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"pizzahouse@restaurant.com\",\n  \"password\": \"Restaurant@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.9. Login del Repartidor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.jwt) {",
+                  "    pm.environment.set(\"jwt_token_delivery\", response.jwt);",
+                  "    console.log(\"✅ JWT del repartidor guardado\");",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"repartidor1@delivery.com\",\n  \"password\": \"Delivery@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.10. Login del Soporte",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.jwt) {",
+                  "    pm.environment.set(\"jwt_token_support\", response.jwt);",
+                  "    console.log(\"✅ JWT del soporte guardado\");",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"soporte@delivery.com\",\n  \"password\": \"Support@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.11. Recuperación de Contraseña - Solicitar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"cliente@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "1.12. Recuperación de Contraseña - Restablecer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"uuid-token-recibido-por-email\",\n  \"newPassword\": \"NuevaPassword@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "auth", "reset-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👨‍💼 FASE 2: Administrador (OWNER)",
+      "item": [
+        {
+          "name": "2.1. Ver Dashboard del Administrador",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_owner}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/owner/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "owner", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "2.2. Ver Métricas de Pedidos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_owner}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/owner/metrics/orders",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "owner", "metrics", "orders"]
+            }
+          }
+        },
+        {
+          "name": "2.3. Ver Trabajadores por Rol",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_owner}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/users/workers?role=DELIVERY",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "workers"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "DELIVERY"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.4. Ver Trabajador por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_owner}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/users/workers/1",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "workers", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 FASE 3: Perfil del Cliente (CUSTOMER)",
+      "item": [
+        {
+          "name": "3.1. Ver Mi Perfil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/users/profile",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "profile"]
+            }
+          }
+        },
+        {
+          "name": "3.2. Subir Foto de Perfil",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/users/profile/photo",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "users", "profile", "photo"]
+            }
+          }
+        },
+        {
+          "name": "3.3. Agregar Dirección",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.id) {",
+                  "    pm.environment.set(\"address_id\", response.id);",
+                  "    console.log(\"✅ Dirección ID guardada:\", response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Casa\",\n  \"street\": \"Av. Principal 123\",\n  \"city\": \"Trujillo\",\n  \"state\": \"La Libertad\",\n  \"zipCode\": \"13001\",\n  \"reference\": \"Frente al parque\",\n  \"latitude\": -8.1119,\n  \"longitude\": -79.0288,\n  \"isDefault\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/addresses",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "addresses"]
+            }
+          }
+        },
+        {
+          "name": "3.4. Ver Mis Direcciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/addresses",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "addresses"]
+            }
+          }
+        },
+        {
+          "name": "3.5. Agregar Método de Pago",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.id) {",
+                  "    pm.environment.set(\"payment_method_id\", response.id);",
+                  "    console.log(\"✅ Método de pago ID guardado:\", response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"CREDIT_CARD\",\n  \"token\": \"tok_visa_1234567890\",\n  \"lastFourDigits\": \"4242\",\n  \"cardholderName\": \"Juan Pérez\",\n  \"isDefault\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/payment-methods",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "payment-methods"]
+            }
+          }
+        },
+        {
+          "name": "3.6. Ver Mis Métodos de Pago",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/payment-methods",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "payment-methods"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 FASE 4: Exploración de Restaurantes (Público)",
+      "item": [
+        {
+          "name": "4.1. Dashboard Principal",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/restaurants/home",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "restaurants", "home"]
+            }
+          }
+        },
+        {
+          "name": "4.2. Ver Todos los Restaurantes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/restaurants",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "restaurants"]
+            }
+          }
+        },
+        {
+          "name": "4.3. Ver Restaurantes Destacados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/restaurants/featured",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "restaurants", "featured"]
+            }
+          }
+        },
+        {
+          "name": "4.4. Buscar Restaurantes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/restaurants/search?q=pizza",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "restaurants", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "pizza"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.5. Restaurantes Cercanos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/restaurants/nearby?lat=-8.1119&lng=-79.0288&radius=5.0",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "restaurants", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "-8.1119"
+                },
+                {
+                  "key": "lng",
+                  "value": "-79.0288"
+                },
+                {
+                  "key": "radius",
+                  "value": "5.0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.6. Ver Detalles de Restaurante",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.id) {",
+                  "    pm.environment.set(\"restaurant_id\", response.id);",
+                  "    console.log(\"✅ Restaurant ID guardado:\", response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/restaurants/1",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "restaurants", "1"]
+            }
+          }
+        },
+        {
+          "name": "4.7. Ver Menú de Restaurante",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/restaurants/{{restaurant_id}}/menu",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "restaurants", "{{restaurant_id}}", "menu"]
+            }
+          }
+        },
+        {
+          "name": "4.8. Buscar Platos en el Menú",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/restaurants/{{restaurant_id}}/menu/search?q=pasta",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "restaurants", "{{restaurant_id}}", "menu", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "pasta"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛒 FASE 5: Carrito y Pedidos (CUSTOMER)",
+      "item": [
+        {
+          "name": "5.1. Agregar Restaurante a Favoritos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/favorites/{{restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "favorites", "{{restaurant_id}}"]
+            }
+          }
+        },
+        {
+          "name": "5.2. Ver Mis Favoritos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/favorites",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "favorites"]
+            }
+          }
+        },
+        {
+          "name": "5.3. Agregar Item al Carrito",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"menuItemId\": 1,\n  \"quantity\": 2,\n  \"customizationNotes\": \"Sin cebolla, extra queso\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/cart/items",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "cart", "items"]
+            }
+          }
+        },
+        {
+          "name": "5.4. Ver Carrito",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/cart",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "5.5. Actualizar Cantidad de Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/cart/items/1?quantity=3",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "cart", "items", "1"],
+              "query": [
+                {
+                  "key": "quantity",
+                  "value": "3"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.6. Eliminar Item del Carrito",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/cart/items/1",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "cart", "items", "1"]
+            }
+          }
+        },
+        {
+          "name": "5.7. Vaciar Carrito",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/cart",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "5.8. Realizar Pedido (Checkout)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.orderId) {",
+                  "    pm.environment.set(\"order_id\", response.orderId);",
+                  "    console.log(\"✅ Order ID guardado:\", response.orderId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressId\": {{address_id}},\n  \"paymentMethodId\": {{payment_method_id}},\n  \"notes\": \"Entregar en la puerta principal\",\n  \"scheduledDeliveryTime\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/orders/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "orders", "checkout"]
+            }
+          }
+        },
+        {
+          "name": "5.9. Ver Historial de Pedidos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/orders/history",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "orders", "history"]
+            }
+          }
+        },
+        {
+          "name": "5.10. Ver Estado del Pedido (Seguimiento)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/orders/{{order_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "orders", "{{order_id}}", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🍕 FASE 6: Gestión de Pedidos por Restaurante (RESTAURANT)",
+      "item": [
+        {
+          "name": "6.1. Confirmar Pedido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_restaurant}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/orders/{{order_id}}/status?status=CONFIRMED",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "orders", "{{order_id}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "CONFIRMED"
+                }
+              ]
+            },
+            "description": "⚠️ Esto creará automáticamente una notificación para el cliente."
+          }
+        },
+        {
+          "name": "6.2. Marcar Pedido en Preparación",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_restaurant}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/orders/{{order_id}}/status?status=PREPARING",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "orders", "{{order_id}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "PREPARING"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "6.3. Marcar Pedido como Listo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_restaurant}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/orders/{{order_id}}/status?status=READY",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "orders", "{{order_id}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "READY"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚚 FASE 7: Gestión de Pedidos por Repartidor (DELIVERY)",
+      "item": [
+        {
+          "name": "7.1. Marcar Pedido en Camino",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_delivery}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/orders/{{order_id}}/status?status=ON_THE_WAY",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "orders", "{{order_id}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "ON_THE_WAY"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7.2. Marcar Pedido como Entregado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_delivery}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/orders/{{order_id}}/status?status=DELIVERED",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "orders", "{{order_id}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "DELIVERED"
+                }
+              ]
+            },
+            "description": "⚠️ Esto creará automáticamente una notificación para el cliente."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📬 FASE 8: Notificaciones (CUSTOMER)",
+      "item": [
+        {
+          "name": "8.1. Ver Notificaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "notifications"]
+            },
+            "description": "Las notificaciones se crean automáticamente cuando cambia el estado de un pedido."
+          }
+        },
+        {
+          "name": "8.2. Contador de Notificaciones No Leídas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/notifications/unread-count",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "notifications", "unread-count"]
+            }
+          }
+        },
+        {
+          "name": "8.3. Marcar Notificación como Leída",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/notifications/1/read",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "notifications", "1", "read"]
+            }
+          }
+        },
+        {
+          "name": "8.4. Marcar Todas las Notificaciones como Leídas",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/notifications/read-all",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "notifications", "read-all"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⭐ FASE 9: Calificaciones y Reseñas (CUSTOMER)",
+      "item": [
+        {
+          "name": "9.1. Crear Reseña (Solo para Pedidos Entregados)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": {{order_id}},\n  \"restaurantRating\": 5,\n  \"deliveryRating\": 4,\n  \"comment\": \"Excelente servicio, la comida llegó caliente y a tiempo.\",\n  \"photoUrl\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/reviews",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "reviews"]
+            },
+            "description": "⚠️ Solo se puede calificar pedidos con estado DELIVERED"
+          }
+        },
+        {
+          "name": "9.2. Ver Reseñas de un Restaurante",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/v1/reviews/restaurant/{{restaurant_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "reviews", "restaurant", "{{restaurant_id}}"]
+            }
+          }
+        },
+        {
+          "name": "9.3. Ver Mi Reseña de un Pedido",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/reviews/order/{{order_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "reviews", "order", "{{order_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 FASE 10: Chat de Soporte (CUSTOMER y SUPPORT)",
+      "item": [
+        {
+          "name": "10.1. Cliente - Crear Chat de Soporte",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.chatId) {",
+                  "    pm.environment.set(\"chat_id\", response.chatId);",
+                  "    console.log(\"✅ Chat ID guardado:\", response.chatId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": {{order_id}},\n  \"subject\": \"Problema con mi pedido\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/chat",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "chat"]
+            }
+          }
+        },
+        {
+          "name": "10.2. Cliente - Ver Mis Chats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chat",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "chat"]
+            }
+          }
+        },
+        {
+          "name": "10.3. Cliente - Ver Chat con Mensajes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chat/{{chat_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "chat", "{{chat_id}}"]
+            }
+          }
+        },
+        {
+          "name": "10.4. Cliente - Enviar Mensaje",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Mi pedido llegó tarde\",\n  \"attachmentUrl\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/chat/{{chat_id}}/messages",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "chat", "{{chat_id}}", "messages"]
+            }
+          }
+        },
+        {
+          "name": "10.5. Cliente - Cerrar Chat",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_customer}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chat/{{chat_id}}/close",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "chat", "{{chat_id}}", "close"]
+            }
+          }
+        },
+        {
+          "name": "10.6. Soporte - Asignar Usuario a Chat",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_support}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/v1/chat/{{chat_id}}/assign?supportUserId=3",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "chat", "{{chat_id}}", "assign"],
+              "query": [
+                {
+                  "key": "supportUserId",
+                  "value": "3"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "10.7. Soporte - Enviar Mensaje",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token_support}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hola, estamos revisando tu pedido. Te contactaremos pronto.\",\n  \"attachmentUrl\": null\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/chat/{{chat_id}}/messages",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "chat", "{{chat_id}}", "messages"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

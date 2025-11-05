@@ -1,11 +1,12 @@
 package com.delivery_trujillo.app_trujillo_services.controllers;
 
 import com.delivery_trujillo.app_trujillo_services.persistence.entities.UserEntity;
-import com.delivery_trujillo.app_trujillo_services.persistence.repositories.UserRepository;
 import com.delivery_trujillo.app_trujillo_services.services.IAuthService;
-import com.delivery_trujillo.app_trujillo_services.services.IUserService;
 import com.delivery_trujillo.app_trujillo_services.services.models.dtos.LoginDTO;
+import com.delivery_trujillo.app_trujillo_services.services.models.dtos.PasswordResetDTO;
+import com.delivery_trujillo.app_trujillo_services.services.models.dtos.PasswordResetRequestDTO;
 import com.delivery_trujillo.app_trujillo_services.services.models.dtos.ResponseDTO;
+import com.delivery_trujillo.app_trujillo_services.services.models.enums.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +28,54 @@ public class AuthController {
     @Autowired
     private IAuthService authService;
 
-    @Autowired
-    private UserRepository userRepository;
+    /**
+     * Registro de Cliente
+     * POST /v1/auth/register/customer
+     */
+    @PostMapping("/register/customer")
+    private ResponseEntity<ResponseDTO> registerCustomer(@RequestBody UserEntity user) throws Exception {
+        LOGGER.info("Registering new customer with email: {}", user.getEmail());
+        return new ResponseEntity<>(authService.register(user, Role.CUSTOMER), HttpStatus.CREATED);
+    }
 
-    @Autowired
-    private IUserService userService;
+    /**
+     * Registro de Repartidor
+     * POST /v1/auth/register/delivery
+     */
+    @PostMapping("/register/delivery")
+    private ResponseEntity<ResponseDTO> registerDelivery(@RequestBody UserEntity user) throws Exception {
+        LOGGER.info("Registering new delivery person with email: {}", user.getEmail());
+        return new ResponseEntity<>(authService.register(user, Role.DELIVERY), HttpStatus.CREATED);
+    }
 
-    @PostMapping("/register")
-    private ResponseEntity<ResponseDTO> addUser(@RequestBody UserEntity user) throws Exception {
-        return new ResponseEntity<>(authService.register(user), HttpStatus.OK);
+    /**
+     * Registro de Personal de Soporte
+     * POST /v1/auth/register/support
+     */
+    @PostMapping("/register/support")
+    private ResponseEntity<ResponseDTO> registerSupport(@RequestBody UserEntity user) throws Exception {
+        LOGGER.info("Registering new support person with email: {}", user.getEmail());
+        return new ResponseEntity<>(authService.register(user, Role.SUPPORT), HttpStatus.CREATED);
+    }
+
+    /**
+     * Registro de Dueño
+     * POST /v1/auth/register/owner
+     */
+    @PostMapping("/register/owner")
+    private ResponseEntity<ResponseDTO> registerOwner(@RequestBody UserEntity user) throws Exception {
+        LOGGER.info("Registering new owner with email: {}", user.getEmail());
+        return new ResponseEntity<>(authService.register(user, Role.OWNER), HttpStatus.CREATED);
+    }
+
+    /**
+     * Registro de Restaurante
+     * POST /v1/auth/register/restaurant
+     */
+    @PostMapping("/register/restaurant")
+    private ResponseEntity<ResponseDTO> registerRestaurant(@RequestBody UserEntity user) throws Exception {
+        LOGGER.info("Registering new restaurant with email: {}", user.getEmail());
+        return new ResponseEntity<>(authService.register(user, Role.RESTAURANT), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -47,5 +87,25 @@ public class AuthController {
         } else {
             return new ResponseEntity<>(loginResponse, HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    /**
+     * Solicitar recuperación de contraseña (RF-03)
+     * POST /v1/auth/forgot-password
+     */
+    @PostMapping("/forgot-password")
+    private ResponseEntity<ResponseDTO> forgotPassword(@RequestBody PasswordResetRequestDTO request) throws Exception {
+        LOGGER.info("Password reset request for email: {}", request.getEmail());
+        return new ResponseEntity<>(authService.requestPasswordReset(request), HttpStatus.OK);
+    }
+
+    /**
+     * Restablecer contraseña con token (RF-03)
+     * POST /v1/auth/reset-password
+     */
+    @PostMapping("/reset-password")
+    private ResponseEntity<ResponseDTO> resetPassword(@RequestBody PasswordResetDTO resetDTO) throws Exception {
+        LOGGER.info("Password reset with token");
+        return new ResponseEntity<>(authService.resetPassword(resetDTO), HttpStatus.OK);
     }
 }

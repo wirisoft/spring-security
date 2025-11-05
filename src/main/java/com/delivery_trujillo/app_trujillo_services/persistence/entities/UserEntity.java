@@ -31,6 +31,14 @@ public class UserEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
+    @Column(length = 500)
+    private String profilePhotoUrl; // URL de la foto de perfil (RF-04)
+
+    // Relación con Role
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private RoleEntity role;
+
     // Campos de Auditoría (Audit Fields)
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -102,5 +110,21 @@ public class UserEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public RoleEntity getRole() {
+        return role;
+    }
+
+    public void setRole(RoleEntity role) {
+        this.role = role;
+    }
+
+    public String getProfilePhotoUrl() {
+        return profilePhotoUrl;
+    }
+
+    public void setProfilePhotoUrl(String profilePhotoUrl) {
+        this.profilePhotoUrl = profilePhotoUrl;
     }
 }

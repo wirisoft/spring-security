@@ -79,6 +79,9 @@ public class UserServiceImpl implements IUserService {
             if (newUser.getPhoneNumber() != null) {
                 userToUpdate.setPhoneNumber(newUser.getPhoneNumber());
             }
+            if (newUser.getProfilePhotoUrl() != null) {
+                userToUpdate.setProfilePhotoUrl(newUser.getProfilePhotoUrl());
+            }
 
             return userRepository.save(userToUpdate);
         } catch (Exception e) {
