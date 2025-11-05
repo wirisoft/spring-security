@@ -42,8 +42,7 @@ COPY --from=builder /app/build/libs/$JAR_FILE app.jar
 # Crear directorio para claves JWT
 RUN mkdir -p /app/jwtKeys
 
-# Instalar base64 para decodificar claves JWT desde variables de entorno (para Render)
-RUN apk add --no-cache base64
+# Nota: base64 ya está incluido en coreutils (Alpine Linux), no necesita instalación separada
 
 # Copia las claves JWT desde el builder stage si existen (para desarrollo local)
 # Si no existen, se crearán desde variables de entorno en producción (Render)
