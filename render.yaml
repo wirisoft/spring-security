@@ -1,0 +1,63 @@
+# Render.com Configuration - Delivery Trujillo Services
+# Capa Gratuita (Free Tier)
+
+services:
+  # API Service (Spring Boot)
+  - type: web
+    name: delivery-trujillo-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    branch: main
+    envVars:
+      # Database Configuration (se configurará automáticamente con la referencia a la BD)
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: delivery-trujillo-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: delivery-trujillo-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: delivery-trujillo-db
+          property: password
+      # JPA Configuration
+      - key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+        value: org.postgresql.Driver
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: SPRING_JPA_SHOW_SQL
+        value: "false"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL
+        value: "true"
+      # JWT Keys Configuration
+      # NOTA: Las claves JWT deben generarse y subirse a Render como variables de entorno
+      # O usar un servicio de almacenamiento de secretos
+      - key: JWT_KEYS_PRIVATE_KEY_PATH
+        value: /app/jwtKeys/private_key.pem
+      - key: JWT_KEYS_PUBLIC_KEY_PATH
+        value: /app/jwtKeys/public_key.pem
+      # Server Configuration
+      - key: SERVER_PORT
+        value: "8080"
+      # Application Configuration
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+    # Health Check
+    healthCheckPath: /v1/restaurants/home
+    # Auto Deploy
+    autoDeploy: true
+
+databases:
+  # PostgreSQL Database
+  - name: delivery-trujillo-db
+    plan: free
+    region: oregon
+    databaseName: deliveryTrujillo
+    user: postgres
+    postgresMajorVersion: 14
+
